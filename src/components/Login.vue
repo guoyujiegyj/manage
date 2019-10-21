@@ -6,14 +6,14 @@
                 <img src="../assets/logo.png" alt="logo">
             </div>
             <!-- form表单-->
-            <el-form label-width="0" class="login_form">
+            <el-form :model="loginForm" :rules="loginRules" label-width="0" class="login_form">
                 <!--用户名-->
-                <el-form-item>
-                    <el-input></el-input>
+                <el-form-item prop="uname">
+                    <el-input v-model="loginForm.uname" prefix-icon="iconfont icon-yonghu" status-icon></el-input>
                 </el-form-item>
                 <!--密码-->
-                <el-form-item>
-                    <el-input></el-input>
+                <el-form-item prop="upwd">
+                    <el-input type="password" v-model="loginForm.upwd" prefix-icon="iconfont icon-mima"></el-input>
                 </el-form-item>
                 <!--button-->
                 <el-form-item class="login_button">
@@ -26,7 +26,25 @@
 </template>
 <script>
 export default {
-
+  data () {
+    return {
+        loginForm: {
+            uname: '',
+            upwd: ''
+        },
+        // 验证规则
+        loginRules: {
+            uname: [
+                { required: true, message: '用户名不能为空', trigger: 'blur' },
+                { min: 3, max: 10, message: '长度在 3 到 10 个字符之间', trigger: 'blur' }
+            ],
+            upwd: [
+                { required: true, message: '密码不能为空', trigger: 'blur' },
+                { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+            ],
+        }
+    }
+  }
 }
 </script>
 <style lang="less" scoped>

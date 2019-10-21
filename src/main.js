@@ -5,6 +5,8 @@ import './plugins/element.js'
 
 // 引入去全局css
 import './assets/css/global.css'
+// 引入字体图标
+import './assets/fonts/iconfont.css'
 Vue.config.productionTip = false
 
 new Vue({
