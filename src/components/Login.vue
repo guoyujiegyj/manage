@@ -17,7 +17,7 @@
                 </el-form-item>
                 <!--button-->
                 <el-form-item class="login_button">
-                    <el-button type="primary">登录</el-button>
+                    <el-button type="primary" @click="login">登录</el-button>
                     <el-button type="info" @click="loginFormReset">重置</el-button>
                 </el-form-item>
             </el-form>
@@ -48,8 +48,15 @@ export default {
     methods: {
         // 重置form表单
         loginFormReset() {
-            // 获取dom元素，通过elementui提供的方法重置。
+            // 获取dom元素，通过elementui提供的resetFields方法重置。
             this.$refs.loginFormRef.resetFields()
+        },
+        // 登录前的预校验
+        login() {
+            // 通过elementui提供的validate方法预校验。
+            this.$refs.loginFormRef.validate(res=>{
+                console.log(res)
+            })
         }
     }
 }
