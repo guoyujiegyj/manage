@@ -1,6 +1,27 @@
 <template>
     <div class="login_container">
-        <div class="login_box">legonn</div>
+        <div class="login_box">
+            <!-- 登录框的logo-->
+            <div class="logo_box">
+                <img src="../assets/logo.png" alt="logo">
+            </div>
+            <!-- form表单-->
+            <el-form label-width="0" class="login_form">
+                <!--用户名-->
+                <el-form-item>
+                    <el-input></el-input>
+                </el-form-item>
+                <!--密码-->
+                <el-form-item>
+                    <el-input></el-input>
+                </el-form-item>
+                <!--button-->
+                <el-form-item class="login_button">
+                    <el-button type="primary">登录</el-button>
+                    <el-button type="info">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
     </div>
 </template>
 <script>
@@ -13,14 +34,45 @@ export default {
         height: 100%;
         background: #2b4b6b;
     }
+    /*登录框白色背景样式*/
     .login_box{
-        width:350px;
-        height:200px;
+        width:410px;
+        height:260px;
         background: #fff;
         border-radius: 5px;
         position:absolute;
         left:50%;
         top:50%;
         transform: translate(-50%,-50%);
+        .logo_box{
+            width:80px;
+            height:80px;
+            background:#fff;
+            padding:10px;
+            position:absolute;
+            /*水平阴影，垂直阴影，模糊距离，阴影尺寸，阴影颜色 */
+            box-shadow:0 0 14px rgb(187, 186, 186);
+            border-radius:50%;
+            left:50%;
+            transform: translate(-50%,-50%);
+        }
+        img{
+            width:100%;
+            border-radius: 50%;
+            background:#eee;
+        }
+    }
+    .login_form{
+        // 让form表单靠下。
+        position:absolute;
+        bottom:0;
+        width:100%;
+        box-sizing: border-box;
+        padding:0 40px;
+    }
+    .login_button{
+        display: flex;
+        /*居右对齐*/
+        justify-content: flex-end;
     }
 </style>
