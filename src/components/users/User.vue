@@ -1,3 +1,72 @@
 <template>
-  <div>user</div>
+  <div>
+    <!--面包屑导航-->
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!--卡片-->
+    <el-card class="box-card">
+      <!--搜索框和添加按钮-->
+      <!--:gutter设置列之间的距离-->
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <div>
+            <el-input placeholder="请输入内容" v-model="searchVal">
+              <template slot="append">请搜索</template>
+            </el-input>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <el-button type="primary">添加用户</el-button>
+        </el-col>
+      </el-row>
+      <!--用户表格-->
+      <el-table :data="usersList" stripe style="width: 100%">
+        <el-table-column prop="username" label="姓名" width="180"></el-table-column>
+        <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
+        <el-table-column prop="moblie" label="电话" width="180"></el-table-column>
+        <el-table-column prop="role_name" label="角色" width="180"></el-table-column>
+        <el-table-column prop="mg_state" label="状态" width="180"></el-table-column>
+        <el-table-column label="操作" width="180"></el-table-column>
+      </el-table>
+    </el-card>
+  </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      usersList: [],
+      // 请求用户列表时携带的参数。
+      queryInfo: {
+        query: '',
+        pagenum: '1',
+        pagesize: '3'
+      },
+      searchVal: ''
+    }
+  },
+  created() {
+    this.getUsersList()
+  },
+  methods: {
+    async getUsersList() {
+      const { data: res } = await this.$http.get('users', {
+        params: this.queryInfo
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error(res.meta.msg)
+      }
+      console.log(res)
+      this.usersList = res.data.users
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+.el-card {
+  margin-top: 10px;
+}
+</style>

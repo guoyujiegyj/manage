@@ -95,3 +95,7 @@ menuObj: {
       }
 使用：通过遍历的每一项item的id来从对象里获取类名，如：
 <i :class="menuObj[item1.id]"></i>
+
+## #侧边栏导航高亮显示及状态的保存。
+通过el-menu的default-active属性，将其置设为index的值即可。
+通过二级的单击事件获取到当前项的index，将其通过sessionStorage本地存储，然后在create方法里设置default-active的属性为sessionStorage里保存的值即可。

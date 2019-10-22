@@ -33,10 +33,15 @@
               <span>{{item1.authName}}</span>
             </template>
             <!--二级菜单-->
-            <el-menu-item  :index="item2.path+''" v-for="(item2) in item1.children" :key="item2.id">
+            <el-menu-item 
+              @click="handleNavActive(item2.path)"  
+              :index="item2.path+''" 
+              v-for="(item2) in item1.children" 
+              :key="item2.id"
+              >
               <!--菜单项-->
               <i class="el-icon-menu"></i>
-              <span @click="handleNavActive(item2.path)">{{item2.authName}}</span>
+              <span>{{item2.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -86,7 +91,6 @@ export default {
     // 获取菜单导航数据
     async getMenuList() {
       const { data: res } = await this.$http.get('menus')
-      console.log(res)
       if (res.meta.status !== 200) return
       this.menuList = res.data
     },
