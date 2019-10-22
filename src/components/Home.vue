@@ -13,15 +13,15 @@
 <script>
 export default {
   data() {
-    return {};
+    return {}
   },
   methods: {
     logout() {
-      window.sessionStorage.clear("token");
-      this.$router.push('/login');
+      window.sessionStorage.clear('token')
+      this.$router.push('/login')
     }
   }
-};
+}
 </script>
 <style lang="less" scoped>
 </style>

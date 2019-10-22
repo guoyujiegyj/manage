@@ -79,7 +79,7 @@ git push -u origin login
 默认会将单引号替换为双引号，
 会添加分号。
 解决：
-创建配置文件prettierc.json文件
+创建配置文件.prettierrc.json文件
 {
   "semi": false, 不适用分号
   "singleQuote": true 使用单引号
