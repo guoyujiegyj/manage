@@ -8,12 +8,12 @@
             <!-- form表单-->
             <el-form :model="loginForm" ref="loginFormRef" :rules="loginRules" label-width="0" class="login_form">
                 <!--用户名-->
-                <el-form-item prop="uname">
-                    <el-input v-model="loginForm.uname" placeholder="用户名" prefix-icon="iconfont icon-yonghu" status-icon></el-input>
+                <el-form-item prop="username">
+                    <el-input v-model="loginForm.username" placeholder="用户名" prefix-icon="iconfont icon-yonghu" status-icon></el-input>
                 </el-form-item>
                 <!--密码-->
-                <el-form-item prop="upwd">
-                    <el-input type="password" placeholder="密码" v-model="loginForm.upwd" prefix-icon="iconfont icon-mima"></el-input>
+                <el-form-item prop="password">
+                    <el-input type="password" placeholder="密码" v-model="loginForm.password" prefix-icon="iconfont icon-mima"></el-input>
                 </el-form-item>
                 <!--button-->
                 <el-form-item class="login_button">
@@ -29,16 +29,16 @@ export default {
     data () {
         return {
             loginForm: {
-                uname: '',
-                upwd: ''
+                username: 'admin',
+                password: '123456'
             },
             // 验证规则
             loginRules: {
-                uname: [
+                username: [
                     { required: true, message: '用户名不能为空', trigger: 'blur' },
-                    { min: 3, max: 10, message: '长度在 3 到 10 个字符之间', trigger: 'blur' }
+                    { min: 2, max: 10, message: '长度在 2 到 10 个字符之间', trigger: 'blur' }
                 ],
-                upwd: [
+                password: [
                     { required: true, message: '密码不能为空', trigger: 'blur' },
                     { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
                 ],
@@ -54,8 +54,17 @@ export default {
         // 登录前的预校验
         login() {
             // 通过elementui提供的validate方法预校验。
-            this.$refs.loginFormRef.validate(res=>{
-                console.log(res)
+            this.$refs.loginFormRef.validate(async valid=>{
+                // 如果预校验失败，直接返回
+                if(!valid) return 
+                // 预校验成功，请求数据库
+                // 结构赋值，将返回值的data数据赋给res
+                const { data:res }=await this.$http.post('login',this.loginForm)
+                if(res.meta.status!==200) return this.$message.error('登录失败')
+                this.$message.success("登录成功")
+                // 本地保存token
+                window.sessionStorage.setItem('token',res.data.token)
+                this.$router.push('/home')
             })
         }
     }

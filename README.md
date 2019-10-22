@@ -62,3 +62,8 @@ elementui的input表单里的图标属性去input输入框找。
             // 通过elementui提供的validate方法预校验。
             this.$refs.loginFormRef.validate()
         }
+### 引用message
+这个项目里elemenui采用的是单独引入分方式，message在单独引入时和其他的不一样。
+1:import {Message} from 'element-ui'
+2:Vue.prototype.$message=Message
+这样便可以正常使用
