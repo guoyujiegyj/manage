@@ -16,9 +16,9 @@
         <div class="cllapse_btn" @click="asideCllapse" :class="isCllapse?'el-icon-arrow-right':'el-icon-arrow-left'"></div>
         <el-menu
           :collapse-transition="false"
+          :default-active="navActive"
           :collapse="isCllapse"
           unique-opened
-          default-active="2"
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
@@ -33,16 +33,18 @@
               <span>{{item1.authName}}</span>
             </template>
             <!--二级菜单-->
-            <el-menu-item :index="item2.path+''" v-for="(item2) in item1.children" :key="item2.id">
+            <el-menu-item  :index="item2.path+''" v-for="(item2) in item1.children" :key="item2.id">
               <!--菜单项-->
               <i class="el-icon-menu"></i>
-              <span>{{item2.authName}}</span>
+              <span @click="handleNavActive(item2.path)">{{item2.authName}}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
       <!--右边-->
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -60,17 +62,26 @@ export default {
         102: 'iconfont icon-dingdanguanli',
         145: 'iconfont icon-shujutongji'
       },
-      isCllapse: true
+      // 左侧栏显示隐藏
+      isCllapse: true,
+      // 左侧栏导航高亮显示。
+      navActive:''
     }
   },
   created() {
     this.getMenuList()
+    this.navActive=window.sessionStorage.getItem('navActive')
   },
   methods: {
     // 退出登录
     logout() {
       window.sessionStorage.clear('token')
       this.$router.push('/login')
+    },
+    // 侧边栏高亮显示
+    handleNavActive(navPath){
+      window.sessionStorage.setItem('navActive',navPath)
+      this.navActive=navPath
     },
     // 获取菜单导航数据
     async getMenuList() {
