@@ -67,3 +67,9 @@ elementui的input表单里的图标属性去input输入框找。
 1:import {Message} from 'element-ui'
 2:Vue.prototype.$message=Message
 这样便可以正常使用
+
+#### 分支问题
+当一个分支开发完后（login），已经提交到本地仓库，需要切换到主分支，然后进行合并和推送。
+推送后，线上没有子分支，只有一个主分支，需要切换到子分支，然后进行推送
+git push -u origin login
+git testttt
