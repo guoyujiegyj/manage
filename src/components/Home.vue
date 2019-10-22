@@ -27,7 +27,6 @@
               <span>导航一</span>
             </template>
             <!--二级菜单-->
-            <el-menu-item-group>
               <!--菜单项-->
               <el-menu-item index="1-1">
                 <i class="el-icon-location"></i>
@@ -37,7 +36,6 @@
                 <i class="el-icon-location"></i>
                 <span>导航一</span>
               </el-menu-item>
-            </el-menu-item-group>
           </el-submenu>
         </el-menu>
       </el-aside>
@@ -49,12 +47,24 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      menuList:[]
+    }
+  },
+  created() {
+    this.getMenuList()
   },
   methods: {
+    // 退出登录
     logout() {
       window.sessionStorage.clear('token')
       this.$router.push('/login')
+    },
+    // 获取菜单导航数据
+    async getMenuList() {
+      const {data: res} = await this.$http.get('menus')
+      if(res.meta.status!==200) return
+      this.menuList = res.data
     }
   }
 }
