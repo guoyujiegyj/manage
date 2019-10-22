@@ -11,8 +11,12 @@
     <!--主体-->
     <el-container>
       <!--侧边栏-->
-      <el-aside width="200px">
+      <el-aside :width="isCllapse?'58px':'200px'">
+        <!--实现侧边隐藏，需要添加下面一个元素-->
+        <div class="cllapse_btn" @click="asideCllapse">|||</div>
         <el-menu
+          :collapse-transition="false"
+          :collapse="isCllapse"
           unique-opened
           default-active="2"
           class="el-menu-vertical-demo"
@@ -54,7 +58,8 @@ export default {
         101: "iconfont icon-shangpinguanli",
         102: "iconfont icon-dingdanguanli",
         145: "iconfont icon-shujutongji"
-      }
+      },
+      isCllapse: true
     }
   },
   created() {
@@ -72,6 +77,10 @@ export default {
       console.log(res)
       if(res.meta.status!==200) return
       this.menuList = res.data
+    },
+    // 折叠侧边栏
+    asideCllapse() {
+      this.isCllapse=!this.isCllapse
     }
   }
 }
@@ -95,9 +104,22 @@ export default {
   background: #373d41;
 }
 .el-aside {
+  user-select: none;
   background: #333744;
   >.el-menu{
+    // 侧边栏右边框一像素问题。
     border-right:0px;
+  }
+  >.cllapse_btn{
+    height:20px;
+    background:#4a5064;
+    text-align: center;
+    // 文本间距。
+    letter-spacing: .3rem;
+    font-size:14px;
+    cursor: pointer;
+    color:#fff;
+    
   }
 }
 .el-main {
