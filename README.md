@@ -72,4 +72,16 @@ elementui的input表单里的图标属性去input输入框找。
 当一个分支开发完后（login），已经提交到本地仓库，需要切换到主分支，然后进行合并和推送。
 推送后，线上没有子分支，只有一个主分支，需要切换到子分支，然后进行推送
 git push -u origin login
-git testttt
+
+#### vscode格式化文件
+快捷键：shift + alt + F
+存在的问题：
+默认会将单引号替换为双引号，
+会添加分号。
+解决：
+创建配置文件prettierc.json文件
+{
+  "semi": false, 不适用分号
+  "singleQuote": true 使用单引号
+}
+
