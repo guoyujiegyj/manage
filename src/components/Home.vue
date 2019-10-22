@@ -13,6 +13,7 @@
       <!--侧边栏-->
       <el-aside width="200px">
         <el-menu
+          unique-opened
           default-active="2"
           class="el-menu-vertical-demo"
           background-color="#545c64"
@@ -95,6 +96,9 @@ export default {
 }
 .el-aside {
   background: #333744;
+  >.el-menu{
+    border-right:0px;
+  }
 }
 .el-main {
   background: #eaedf1;
@@ -105,5 +109,6 @@ export default {
 .iconfont{
   margin-right:16px;
 }
+
 </style>
 
