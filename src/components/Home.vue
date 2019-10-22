@@ -11,9 +11,9 @@
     <!--主体-->
     <el-container>
       <!--侧边栏-->
-      <el-aside :width="isCllapse?'58px':'200px'">
+      <el-aside :width="isCllapse?'64px':'200px'">
         <!--实现侧边隐藏，需要添加下面一个元素-->
-        <div class="cllapse_btn" @click="asideCllapse">|||</div>
+        <div class="cllapse_btn" @click="asideCllapse" :class="isCllapse?'el-icon-arrow-right':'el-icon-arrow-left'"></div>
         <el-menu
           :collapse-transition="false"
           :collapse="isCllapse"
@@ -23,20 +23,21 @@
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#409eff"
+          router
         >
           <!--一级菜单-->
-          <el-submenu :index="item1.id+''" v-for='(item1) in menuList' :key=item1.id>
+          <el-submenu :index="item1.id+''" v-for="(item1) in menuList" :key="item1.id">
             <!--菜单项-->
             <template slot="title">
               <i :class="menuObj[item1.id]"></i>
               <span>{{item1.authName}}</span>
             </template>
             <!--二级菜单-->
-              <el-menu-item :index="item2.id+''" v-for='(item2) in item1.children' :key='item2.id'>
-                <!--菜单项-->
-                <i class="el-icon-menu"></i>
-                <span>{{item2.authName}}</span>
-              </el-menu-item>
+            <el-menu-item :index="item2.path+''" v-for="(item2) in item1.children" :key="item2.id">
+              <!--菜单项-->
+              <i class="el-icon-menu"></i>
+              <span>{{item2.authName}}</span>
+            </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
@@ -53,11 +54,11 @@ export default {
       // 通过menuObj，在遍历menu时，为每一个菜单项添加图标。
       // key是返回数据的每项菜单的id
       menuObj: {
-        125: "iconfont icon-yonghu",
-        103: "iconfont icon-quanxianguanli",
-        101: "iconfont icon-shangpinguanli",
-        102: "iconfont icon-dingdanguanli",
-        145: "iconfont icon-shujutongji"
+        125: 'iconfont icon-yonghu',
+        103: 'iconfont icon-quanxianguanli',
+        101: 'iconfont icon-shangpinguanli',
+        102: 'iconfont icon-dingdanguanli',
+        145: 'iconfont icon-shujutongji'
       },
       isCllapse: true
     }
@@ -73,14 +74,14 @@ export default {
     },
     // 获取菜单导航数据
     async getMenuList() {
-      const {data: res} = await this.$http.get('menus')
+      const { data: res } = await this.$http.get('menus')
       console.log(res)
-      if(res.meta.status!==200) return
+      if (res.meta.status !== 200) return
       this.menuList = res.data
     },
     // 折叠侧边栏
     asideCllapse() {
-      this.isCllapse=!this.isCllapse
+      this.isCllapse = !this.isCllapse
     }
   }
 }
@@ -106,20 +107,23 @@ export default {
 .el-aside {
   user-select: none;
   background: #333744;
-  >.el-menu{
+  > .el-menu {
     // 侧边栏右边框一像素问题。
-    border-right:0px;
+    border-right: 0px;
+    padding-top:0px;
   }
-  >.cllapse_btn{
-    height:20px;
-    background:#4a5064;
+  // 显示隐藏左侧栏的样式
+  > .cllapse_btn {
+    height: 20px;
+    line-height:20px;
+    width: 100%;
+    background: #4a5064;
     text-align: center;
     // 文本间距。
-    letter-spacing: .3rem;
-    font-size:14px;
+    letter-spacing: 0.3rem;
+    font-size: 14px;
     cursor: pointer;
-    color:#fff;
-    
+    color: #fff;
   }
 }
 .el-main {
@@ -128,9 +132,8 @@ export default {
 .container_box {
   height: 100%;
 }
-.iconfont{
-  margin-right:16px;
+.iconfont {
+  margin-right: 16px;
 }
-
 </style>
 
