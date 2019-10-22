@@ -17,24 +17,20 @@
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
-          active-text-color="#ffd04b"
+          active-text-color="#409eff"
         >
           <!--一级菜单-->
-          <el-submenu index="1">
+          <el-submenu :index="item1.id+''" v-for='(item1) in menuList' :key=item1.id>
             <!--菜单项-->
             <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
+              <i :class="menuObj[item1.id]"></i>
+              <span>{{item1.authName}}</span>
             </template>
             <!--二级菜单-->
-              <!--菜单项-->
-              <el-menu-item index="1-1">
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
-              </el-menu-item>
-              <el-menu-item index="1-2">
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
+              <el-menu-item :index="item2.id+''" v-for='(item2) in item1.children' :key='item2.id'>
+                <!--菜单项-->
+                <i class="el-icon-menu"></i>
+                <span>{{item2.authName}}</span>
               </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -48,7 +44,16 @@
 export default {
   data() {
     return {
-      menuList:[]
+      menuList: [],
+      // 通过menuObj，在遍历menu时，为每一个菜单项添加图标。
+      // key是返回数据的每项菜单的id
+      menuObj: {
+        125: "iconfont icon-yonghu",
+        103: "iconfont icon-quanxianguanli",
+        101: "iconfont icon-shangpinguanli",
+        102: "iconfont icon-dingdanguanli",
+        145: "iconfont icon-shujutongji"
+      }
     }
   },
   created() {
@@ -63,6 +68,7 @@ export default {
     // 获取菜单导航数据
     async getMenuList() {
       const {data: res} = await this.$http.get('menus')
+      console.log(res)
       if(res.meta.status!==200) return
       this.menuList = res.data
     }
@@ -95,6 +101,9 @@ export default {
 }
 .container_box {
   height: 100%;
+}
+.iconfont{
+  margin-right:16px;
 }
 </style>
 

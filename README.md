@@ -76,8 +76,7 @@ git push -u origin login
 #### vscode格式化文件
 快捷键：shift + alt + F
 存在的问题：
-默认会将单引号替换为双引号，
-会添加分号。
+默认会将单引号替换为双引号，会添加分号。
 解决：
 创建配置文件.prettierrc.json文件
 {
@@ -85,3 +84,14 @@ git push -u origin login
   "singleQuote": true 使用单引号
 }
 
+### 遍历菜单时，为每一项添加图标。
+在data里定义对象，key是每一个菜单项对应的key，值是图标的类名。如：
+menuObj: {
+        125: "iconfont icon-yonghu",
+        103: "iconfont icon-quanxianguanli",
+        101: "iconfont icon-shangpinguanli",
+        102: "iconfont icon-dingdanguanli",
+        145: "iconfont icon-shujutongji"
+      }
+使用：通过遍历的每一项item的id来从对象里获取类名，如：
+<i :class="menuObj[item1.id]"></i>
