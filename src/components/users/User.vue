@@ -60,11 +60,11 @@
       <el-dialog title="添加用户" @close="resetForm"  :visible.sync="dialogFormVisible">
         <el-form :model="addForm" ref="addUserRef" label-position="right" :rules="rules">
           <!--prop对应验证规则-->
-          <el-form-item label="用户名" label-width="80px" prop="name">
-            <el-input v-model="addForm.name"></el-input>
+          <el-form-item label="用户名" label-width="80px" prop="username">
+            <el-input v-model="addForm.username"></el-input>
           </el-form-item>
-          <el-form-item label="密码" label-width="80px" prop="pwd">
-            <el-input v-model="addForm.pwd"></el-input>
+          <el-form-item label="密码" label-width="80px" prop="password">
+            <el-input v-model="addForm.password"></el-input>
           </el-form-item>
           <el-form-item label="邮箱" label-width="80px" prop="email">
             <el-input v-model="addForm.email"></el-input>
@@ -130,8 +130,8 @@ export default {
       total: 0,
       // 添加用户的数据
       addForm: {
-        name: '',
-        pwd: '',
+        username: '',
+        password: '',
         email: '',
         mobile: ''
       },
@@ -139,11 +139,11 @@ export default {
       dialogFormVisible: false,
       // 添加用户和密码规则校验
       rules: {
-        name: [
+        username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        pwd: [
+        password: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
@@ -210,11 +210,21 @@ export default {
     // 点击确定时，添加用户
     addUserSure() {
       // 先进行预校验。通过element的validate方法
-      this.$refs.addUserRef.validate(res=>{
-        if(res===false){
+      this.$refs.addUserRef.validate(async vali=>{
+        if(vali===false){
           this.$message.error("请检查")
         }
-        console.log(res)
+        const {data: res} = await this.$http.post('users',this.addForm)
+        if(res.meta.status === 201) {
+          this.$message.success("添加成功")
+          // 重新获取数据。
+          this.getUsersList()
+          // 关闭弹框。
+          this.dialogFormVisible=false
+        }else{
+          return this.$message.error("添加失败")
+        }
+        
       })
     }
   }
