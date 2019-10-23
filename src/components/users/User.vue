@@ -41,8 +41,13 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
-          <template>
-            <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
+          <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-edit"
+              @click="editUserForm(scope.row.id)"
+            ></el-button>
             <el-tooltip
               :enterable="false"
               class="item"
@@ -57,7 +62,7 @@
         </el-table-column>
       </el-table>
       <!--添加用户模态框-->
-      <el-dialog title="添加用户" @close="resetForm"  :visible.sync="dialogFormVisible">
+      <el-dialog title="添加用户" @close="resetAddForm" :visible.sync="dialogFormVisible">
         <el-form :model="addForm" ref="addUserRef" label-position="right" :rules="rules">
           <!--prop对应验证规则-->
           <el-form-item label="用户名" label-width="80px" prop="username">
@@ -76,6 +81,25 @@
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="addUserSure">确 定</el-button>
+        </div>
+      </el-dialog>
+      <!--修改用户模态框-->
+      <el-dialog title="添加用户" :visible.sync="dialogEditVisible">
+        <el-form :model="editForm" ref="editUserRef" label-position="right" :rules="rules">
+          <!--prop对应验证规则-->
+          <el-form-item label="用户名" label-width="80px" prop="username">
+            <el-input v-model="addForm.username"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" label-width="80px" prop="email">
+            <el-input v-model="addForm.email"></el-input>
+          </el-form-item>
+          <el-form-item label="手机" label-width="80px" prop="mobile">
+            <el-input v-model="addForm.mobile"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogEditVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editUserSure">确 定</el-button>
         </div>
       </el-dialog>
       <!--分页-->
@@ -100,23 +124,23 @@ export default {
     // 2:在rules里使用：如：{validator: checkEmail}
     // 3:在el-form-item里通过prop使用此验证规则
     var checkEmail = (rule, val, callback) => {
-      const regEmail=/^[\da-z]+([\-\.\_]?[\da-z]+)*@[\da-z]+([\-\.]?[\da-z]+)*(\.[a-z]{2,})+$/i
-      if(regEmail.test(val)){
+      const regEmail = /^[\da-z]+([\-\.\_]?[\da-z]+)*@[\da-z]+([\-\.]?[\da-z]+)*(\.[a-z]{2,})+$/i
+      if (regEmail.test(val)) {
         return callback()
-      } 
+      }
       callback(new Error('邮箱格式不对'))
     }
     // 电话的自定义验证
     var checkMobile = (rule, val, callback) => {
-      const regMobile=/^1(3|4|5|6|7|8|9)\d{9}$/
+      const regMobile = /^1(3|4|5|6|7|8|9)\d{9}$/
       // 验证成功
-      if(regMobile.test(val)){
+      if (regMobile.test(val)) {
         return callback()
       }
       // 验证失败
       callback(new Error('电话号码格式不正确'))
     }
-    return{
+    return {
       usersList: [],
       // 请求用户列表时携带的参数。
       queryInfo: {
@@ -135,8 +159,15 @@ export default {
         email: '',
         mobile: ''
       },
+      editForm: {
+        username: '',
+        email: '',
+        mobile: ''
+      },
       // 控制添加用户模态框显示隐藏,默认隐藏
       dialogFormVisible: false,
+      // 修改用户
+      dialogEditVisible: false,
       // 添加用户和密码规则校验
       rules: {
         username: [
@@ -148,11 +179,11 @@ export default {
           { min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         email: [
-          { required: true, message: '请输入用户名'},
+          { required: true, message: '请输入用户名' },
           { validator: checkEmail, trigger: 'blur' }
         ],
         mobile: [
-          { required: true, message: '请输入用户名'},
+          { required: true, message: '请输入用户名' },
           { validator: checkMobile, trigger: 'blur' }
         ]
       }
@@ -174,12 +205,12 @@ export default {
       this.usersList = res.data.users
     },
     // 点击添加用户时，执行此方法，清空表单。
-    resetForm() {
+    resetAddForm() {
       // 此处和登录页的重置有异曲同工之妙。
       // 通过element的resetfields方法来清空。
-      // this.$refs.addUserRef.resetFields() 
+      // this.$refs.addUserRef.resetFields()
       this.$refs.addUserRef.resetFields()
-    }, 
+    },
     // 每页显示的条数。
     handleSizeChange(val) {
       // 获取到每页显示的条数，并赋值。
@@ -210,22 +241,33 @@ export default {
     // 点击确定时，添加用户
     addUserSure() {
       // 先进行预校验。通过element的validate方法
-      this.$refs.addUserRef.validate(async vali=>{
-        if(vali===false){
-          this.$message.error("请检查")
+      this.$refs.addUserRef.validate(async vali => {
+        if (vali === false) {
+          this.$message.error('请检查')
         }
-        const {data: res} = await this.$http.post('users',this.addForm)
-        if(res.meta.status === 201) {
-          this.$message.success("添加成功")
+        const { data: res } = await this.$http.post('users', this.addForm)
+        if (res.meta.status === 201) {
+          this.$message.success('添加成功')
           // 重新获取数据。
           this.getUsersList()
           // 关闭弹框。
-          this.dialogFormVisible=false
-        }else{
-          return this.$message.error("添加失败")
+          this.dialogFormVisible = false
+        } else {
+          return this.$message.error('添加失败')
         }
-        
       })
+    },
+    // 修改用户：
+    async editUserForm(id) {
+      // 通过作用域插槽获取id。
+      this.dialogEditVisible=true
+      const {data: res} = await this.$http.get("users/"+id)
+      if(res.meta.status!==200) return
+      this.editForm=res.data
+    },
+    // 确认修改。
+    editUserSure() {
+
     }
   }
 }
@@ -237,7 +279,7 @@ export default {
 .el-pagination {
   margin-top: 10px;
 }
-.el-breadcrumb{
-  margin-bottom:10px;
+.el-breadcrumb {
+  margin-bottom: 10px;
 }
 </style>
