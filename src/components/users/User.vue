@@ -37,7 +37,15 @@
             </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180"></el-table-column>
+        <el-table-column label="操作" width="180">
+          <template >
+            <el-button type="primary" size="mini" icon="el-icon-edit"></el-button>
+            <el-tooltip :enterable="false" class="item" effect="dark" content="修改角色" placement="top">
+              <el-button type="warning" size="mini" icon="el-icon-setting"></el-button>
+            </el-tooltip>
+            <el-button type="danger" size="mini" icon="el-icon-delete"></el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
   </div>
