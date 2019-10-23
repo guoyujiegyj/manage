@@ -59,17 +59,18 @@
       <!--添加用户模态框-->
       <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
         <el-form :model="addForm" label-position="right" :rules="rules">
+          <!--prop对应验证规则-->
           <el-form-item label="用户名" label-width="80px" prop="name">
             <el-input v-model="addForm.name"></el-input>
           </el-form-item>
           <el-form-item label="密码" label-width="80px" prop="pwd">
-            <el-input v-model="addForm.name"></el-input>
+            <el-input v-model="addForm.pwd"></el-input>
           </el-form-item>
           <el-form-item label="邮箱" label-width="80px" prop="email">
-            <el-input v-model="addForm.name"></el-input>
+            <el-input v-model="addForm.email"></el-input>
           </el-form-item>
           <el-form-item label="手机" label-width="80px" prop="mobile">
-            <el-input v-model="addForm.name"></el-input>
+            <el-input v-model="addForm.mobile"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -93,7 +94,29 @@
 <script>
 export default {
   data() {
-    return {
+    // 邮件的自定义验证
+    // 自定义验证的步骤：
+    // 1:定义验证规则函数，如：checkEmail。
+    // 2:在rules里使用：如：{validator: checkEmail}
+    // 3:在el-form-item里通过prop使用此验证规则
+    var checkEmail = (rule, val, callback) => {
+      const regEmail=/^[\da-z]+([\-\.\_]?[\da-z]+)*@[\da-z]+([\-\.]?[\da-z]+)*(\.[a-z]{2,})+$/i
+      if(regEmail.test(val)){
+        return callback()
+      } 
+      callback(new Error('邮箱格式不对'))
+    }
+    // 电话的自定义验证
+    var checkMobile = (rule, val, callback) => {
+      const regMobile=/^1(3|4|5|6|7|8|9)\d{9}$/
+      // 验证成功
+      if(regMobile.test(val)){
+        return callback()
+      }
+      // 验证失败
+      callback(new Error('电话号码格式不正确'))
+    }
+    return{
       usersList: [],
       // 请求用户列表时携带的参数。
       queryInfo: {
@@ -106,10 +129,15 @@ export default {
       // 请求来地用户总数
       total: 0,
       // 添加用户的数据
-      addForm: {},
+      addForm: {
+        name: '',
+        pwd: '',
+        email: '',
+        mobile: ''
+      },
       // 控制添加用户模态框显示隐藏,默认隐藏
       dialogFormVisible: false,
-      // 添加用户规则校验
+      // 添加用户和密码规则校验
       rules: {
         name: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -118,6 +146,14 @@ export default {
         pwd: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 3, max: 10, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '请输入用户名'},
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, message: '请输入用户名'},
+          { validator: checkMobile, trigger: 'blur' }
         ]
       }
     }
