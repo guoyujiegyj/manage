@@ -19,7 +19,7 @@
           </div>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="dialogFormVisible=true">添加用户</el-button>
+          <el-button type="primary" @click="resetForm">添加用户</el-button>
         </el-col>
       </el-row>
       <!--用户表格-->
@@ -58,7 +58,7 @@
       </el-table>
       <!--添加用户模态框-->
       <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
-        <el-form :model="addForm" label-position="right" :rules="rules">
+        <el-form :model="addForm" ref="addUserRef" label-position="right" :rules="rules">
           <!--prop对应验证规则-->
           <el-form-item label="用户名" label-width="80px" prop="name">
             <el-input v-model="addForm.name"></el-input>
@@ -173,6 +173,13 @@ export default {
       this.total = res.data.total
       this.usersList = res.data.users
     },
+    // 点击添加用户时，执行此方法，
+    resetForm() {
+      this.dialogFormVisible=true
+      // 此处和登录页的重置有异曲同工之妙。
+      // 通过element的resetfields方法来清空。
+      this.$refs.addUserRef.resetFields()      
+    }, 
     // 每页显示的条数。
     handleSizeChange(val) {
       // 获取到每页显示的条数，并赋值。
@@ -193,7 +200,7 @@ export default {
       const { data: res } = await this.$http.put(
         `users/${userInfo.id}/state/${userInfo.mg_state}`
       )
-      // 如果没有修改成功，则需要将视觉层的状态切换。
+      // 如果没有修改成功，则需要将视觉上的状态切换。
       if (res.meta.status !== 200) {
         userInfo.mg_state = !userInfo.mg_state
         return this.$message.error(res.meta.msg)
