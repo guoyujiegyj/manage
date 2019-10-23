@@ -13,8 +13,8 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <div>
-            <el-input placeholder="请输入内容" v-model="searchVal">
-              <template slot="append">请搜索</template>
+            <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getUsersList">
+              <el-button slot="append" @click="getUsersList" icon="el-icon-search"></el-button>
             </el-input>
           </div>
         </el-col>
@@ -77,7 +77,6 @@ export default {
         // 每页的条数
         pagesize: 3
       },
-      searchVal: '',
       total: 0
     }
   },
@@ -86,12 +85,15 @@ export default {
   },
   methods: {
     async getUsersList() {
+      console.log("d")
       const { data: res } = await this.$http.get('users', {
         params: this.queryInfo
       })
       if (res.meta.status !== 200) {
+        consoel.log("!==200")
         return this.$message.error(res.meta.msg)
       }
+      console.log("sss")
       this.total=res.data.total
       this.usersList = res.data.users
     },
