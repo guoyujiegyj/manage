@@ -32,7 +32,7 @@
         <el-table-column prop="role_name" label="角色" width="180"></el-table-column>
         <el-table-column prop="mg_state" label="状态" width="180">
           <template slot-scope="scope">
-            <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            <el-switch @change="stateChange(scope.row)" v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
@@ -108,6 +108,17 @@ export default {
       // 然后重新发起数据请求，即可获得数据。
       this.queryInfo.pagenum=val
       this.getUsersList()
+    },
+    // 用户状态改变时
+    async stateChange(userInfo) {
+      // 只要进入此函数，则userInfo里的状态已经改变，秩序将改变的状态提交给数据库即可。
+      const {data:res} =await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
+      // 如果没有修改成功，则需要将视觉层的状态切换。
+      if(res.meta.status!==200){
+        userInfo.mg_state=!userInfo.mg_state
+        return this.$message.error(res.meta.msg)
+      }
+      this.$message.success(res.meta.msg)
     }
   }
 }
