@@ -57,7 +57,7 @@
             >
               <el-button type="warning" size="mini" icon="el-icon-setting"></el-button>
             </el-tooltip>
-            <el-button type="danger" size="mini" icon="el-icon-delete"></el-button>
+            <el-button type="danger" size="mini" icon="el-icon-delete" @click="deleteUser(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -285,7 +285,6 @@ export default {
       const { data: res } = await this.$http.get('users/' + id)
       if (res.meta.status !== 200) return
       this.editForm = res.data
-      console.log(this.editForm)
     },
     // 确认修改。
     editUserSure() {
@@ -307,6 +306,32 @@ export default {
         this.dialogEditVisible = false
         this.getUsersList()
       })
+    },
+    // 删除用户
+    async deleteUser(id) {
+      const confirmRes = await this.$confirm('是否确认删除?', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+          // 取消时，执行错误的回调。用catch捕获。
+        }).catch(err=>err)
+        // 当确认删除时，回返回‘confirm’字符串
+        // console.log(confirmRes)
+        // 如果是取消删除
+        if(confirmRes!=='confirm'){
+          return this.$message.info('已取消删除')
+        }
+        // 如果是确认删除
+        const {data: res} = await this.$http.delete('users/'+id)
+        if(res.meta.status!==200){
+          this.$message.info('删除失败')
+        }else{
+          this.$message.success('删除成功')
+          this.getUsersList()
+          this.dialogEditVisible=false
+        }
+        
+       
     }
   }
 }
