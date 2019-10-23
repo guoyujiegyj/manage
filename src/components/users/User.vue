@@ -24,6 +24,8 @@
       </el-row>
       <!--用户表格-->
       <el-table :data="usersList" stripe style="width: 100%">
+        <!--索引列-->
+        <el-table-column type="index"></el-table-column>
         <el-table-column prop="username" label="姓名" width="180"></el-table-column>
         <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
         <el-table-column prop="moblie" label="电话" width="180"></el-table-column>
