@@ -19,7 +19,7 @@
           </div>
         </el-col>
         <el-col :span="6">
-          <el-button type="primary" @click="resetForm">添加用户</el-button>
+          <el-button type="primary" @click="dialogFormVisible=true">添加用户</el-button>
         </el-col>
       </el-row>
       <!--用户表格-->
@@ -57,7 +57,7 @@
         </el-table-column>
       </el-table>
       <!--添加用户模态框-->
-      <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
+      <el-dialog title="添加用户" @close="resetForm"  :visible.sync="dialogFormVisible">
         <el-form :model="addForm" ref="addUserRef" label-position="right" :rules="rules">
           <!--prop对应验证规则-->
           <el-form-item label="用户名" label-width="80px" prop="name">
@@ -75,7 +75,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary">确 定</el-button>
+          <el-button type="primary" @click="addUserSure">确 定</el-button>
         </div>
       </el-dialog>
       <!--分页-->
@@ -173,12 +173,12 @@ export default {
       this.total = res.data.total
       this.usersList = res.data.users
     },
-    // 点击添加用户时，执行此方法，
+    // 点击添加用户时，执行此方法，清空表单。
     resetForm() {
-      this.dialogFormVisible=true
       // 此处和登录页的重置有异曲同工之妙。
       // 通过element的resetfields方法来清空。
-      this.$refs.addUserRef.resetFields()      
+      // this.$refs.addUserRef.resetFields() 
+      this.$refs.addUserRef.resetFields()
     }, 
     // 每页显示的条数。
     handleSizeChange(val) {
@@ -206,6 +206,16 @@ export default {
         return this.$message.error(res.meta.msg)
       }
       this.$message.success(res.meta.msg)
+    },
+    // 点击确定时，添加用户
+    addUserSure() {
+      // 先进行预校验。通过element的validate方法
+      this.$refs.addUserRef.validate(res=>{
+        if(res===false){
+          this.$message.error("请检查")
+        }
+        console.log(res)
+      })
     }
   }
 }
