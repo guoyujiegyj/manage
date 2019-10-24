@@ -346,7 +346,4 @@ export default {
 .el-pagination {
   margin-top: 10px;
 }
-.el-breadcrumb {
-  margin-bottom: 10px;
-}
 </style>
