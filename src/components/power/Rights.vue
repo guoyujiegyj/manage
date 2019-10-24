@@ -9,9 +9,9 @@
     <!--权限列表-->
     <el-table :data="rightsList" border stripe style="width: 100%">
       <el-table-column type="index" header-align="center" align="center"></el-table-column>
-      <el-table-column prop="authName" label="名称" width="180"></el-table-column>
-      <el-table-column prop="path" label="路径" width="180"></el-table-column>
-      <el-table-column prop="level" label="权限等级">
+      <el-table-column prop="authName" align="center" label="名称" width="180"></el-table-column>
+      <el-table-column prop="path" align="center" label="路径" width="180"></el-table-column>
+      <el-table-column prop="level" align="center" label="权限等级">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.level==='0'">一级</el-tag>
           <el-tag v-else-if="scope.row.level==='1'">二级</el-tag>
