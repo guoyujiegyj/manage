@@ -55,7 +55,12 @@
               content="修改角色"
               placement="top"
             >
-              <el-button type="warning" size="mini" icon="el-icon-setting"></el-button>
+              <el-button
+                type="warning"
+                size="mini"
+                icon="el-icon-setting"
+                @click="modifyRole(scope.row)"
+              ></el-button>
             </el-tooltip>
             <el-button
               type="danger"
@@ -107,6 +112,27 @@
           <el-button type="primary" @click="editUserSure">确 定</el-button>
         </div>
       </el-dialog>
+      <!--修改角色模态框-->
+      <el-dialog @close="resetSelect" title="修改角色" :visible.sync="dialogModifyRole" width="30%" height="60%">
+        <span class="modifyRoleClass">当前用户：{{roleInfo.username}}</span>
+        <br>
+        <span class="modifyRoleClass">当前角色：{{roleInfo.role_name}}</span>
+        <br>
+        <div>
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option
+              v-for="(item) in rolesList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogModifyRole = false">取 消</el-button>
+          <el-button type="primary" @click="saveRole">确 定</el-button>
+        </span>
+      </el-dialog>
       <!--分页-->
       <el-pagination
         @size-change="handleSizeChange"
@@ -157,6 +183,9 @@ export default {
       },
       // 请求来的用户总数
       total: 0,
+      // 修改角色时的用户信息。
+      roleInfo: {},
+
       // 添加用户的数据
       addForm: {
         username: '',
@@ -164,6 +193,9 @@ export default {
         email: '',
         mobile: ''
       },
+      // 角色列表
+      rolesList: [],
+      selectedRoleId: '',
       // 修改用户的数据
       editForm: {
         username: '',
@@ -173,6 +205,8 @@ export default {
       },
       // 控制添加用户模态框显示隐藏,默认隐藏
       dialogFormVisible: false,
+      // 修改角色的模态框
+      dialogModifyRole: false,
       // 修改用户
       dialogEditVisible: false,
       // 添加用户de密码规则校验
@@ -335,6 +369,37 @@ export default {
         this.getUsersList()
         this.dialogEditVisible = false
       }
+    },
+    // 修改角色,点击修改角色时调用
+    async modifyRole(roleInfo) {
+      console.log(roleInfo)
+      this.dialogModifyRole = true
+      // 获取到要修改的用户信息，保存到data
+      this.roleInfo = roleInfo
+      // 获取角色列表
+      const { data: res } = await this.$http.get('roles')
+      // 保存角色列表
+      this.rolesList = res.data
+    },
+    // 修改角色，点击确认时修改
+    async saveRole() {
+      // 首先得选了角色，即selected不能为空
+      if(!this.selectedRoleId){
+        return this.$message.error("请选择角色")
+      }
+      // 发送请求：
+      const {data: res} = await this.$http.put(`users/${this.roleInfo.id}/role`,{rid: this.selectedRoleId})
+      //console.log(res)
+      if(res.meta.status===200){
+        this.$message.success('角色更新成功')
+        this.getUsersList()
+        this.dialogModifyRole=false
+      }
+    },
+    // 当修改角色的莫泰关闭时，触发此事件，清空其数据
+    resetSelect() {
+      this.selectedRoleId=''
+
     }
   }
 }
@@ -345,5 +410,9 @@ export default {
 }
 .el-pagination {
   margin-top: 10px;
+}
+.modifyRoleClass {
+  height: 30px;
+  line-height: 30px;
 }
 </style>
