@@ -1,11 +1,7 @@
 <template>
   <el-card class="box-card">
     <!--面包屑导航-->
-    <el-breadcrumb separator="/">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <my-breadcrumb level1="权限管理" level2="权限列表"></my-breadcrumb>
     <!--权限列表-->
     <el-table :data="rightsList" height="450px" border stripe style="width: 100%">
       <el-table-column type="index" header-align="center" align="center"></el-table-column>

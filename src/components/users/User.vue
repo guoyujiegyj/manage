@@ -2,12 +2,8 @@
   <div>
     <!--卡片-->
     <el-card class="box-card">
-      <!--面包屑导航-->
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-        <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-      </el-breadcrumb>
+      <!--面包屑导航组件-->
+      <my-breadcrumb level1="用户管理" level2="用户列表"></my-breadcrumb>
       <!--搜索框和添加按钮-->
       <!--:gutter设置列之间的距离-->
       <el-row :gutter="20">
@@ -398,6 +394,7 @@ export default {
     },
     // 当修改角色的莫泰关闭时，触发此事件，清空其数据
     resetSelect() {
+      // 清除选中项，让下次点开时默认为请选择。
       this.selectedRoleId=''
 
     }

@@ -2,11 +2,7 @@
   <el-card class="box-card">
     <div class="title">
         <!--面包屑导航-->
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item>角色管理</el-breadcrumb-item>
-        <el-breadcrumb-item>角色列表</el-breadcrumb-item>
-      </el-breadcrumb>
+      <my-breadcrumb level1="角色管理" level2="角色列表"></my-breadcrumb>
       <!--添加按鈕-->
       <el-button type="primary">添加角色</el-button>
     </div>
