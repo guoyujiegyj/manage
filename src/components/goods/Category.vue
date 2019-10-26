@@ -28,13 +28,23 @@
         <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
       </template>
     </tree-table>
+    <!--分页-->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="queryInfo.pagenum"
+      :page-sizes="[2,4,6,8]"
+      :page-size="queryInfo.pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </el-card>
 </template>
 <script>
 export default {
   data() {
     return {
-      // 获取商品分类列表需要向服务器传递的参数
+      // 获取商品分类列表需要向服务器传递的参数,以下值为默认值，和view双先绑定。
       queryInfo: {
         type: 3,
         pagenum: 1,
@@ -73,7 +83,13 @@ export default {
           type: 'template',
           template: 'opt'
         }
-      ]
+      ],
+      // 分页数据
+      pageInfo: {
+        pagesize: 5,
+        pagenum: 1
+      },
+      total: 0
     }
   },
   created() {
@@ -88,6 +104,21 @@ export default {
       console.log(res)
       if (res.meta.status !== 200) return
       this.cateList = res.data.result
+      this.total=res.data.total
+    },
+    // 当每页的条数改变时触发的方法。
+    handleSizeChange(newPageSize) {
+      // 修改data里对应的值。
+      this.queryInfo.pagesize=newPageSize
+      // 重新请求数据
+      this.getCateList()
+    },
+    // 当当前页码改变时
+    handleCurrentChange(newPageNum) {
+      // 修改data里对应的值。
+      this.queryInfo.pagenum=newPageNum
+      // 重新发起请求
+      this.getCateList()
     }
   }
 }
