@@ -7,3 +7,8 @@ html,body,#app{
 .el-breadcrumb{
     margin-bottom:10px;
   }
+
+ .el-scrollbar__wrap{
+    max-height:200px;
+    overflow: scroll;    
+  }

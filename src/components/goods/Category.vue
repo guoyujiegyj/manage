@@ -3,7 +3,7 @@
     <div class="title">
       <!--面包屑导航-->
       <my-breadcrumb level1="商品管理" level2="商品分类"></my-breadcrumb>
-      <el-button type="primary" @click="addCate">添加分类</el-button>
+      <el-button type="primary" @click="addCateDialog">添加分类</el-button>
     </div>
     <!--树形表格-->
     <tree-table
@@ -37,7 +37,7 @@
       </template>
     </tree-table>
     <!--添加分类模态框-->
-    <el-dialog class="dialog" title="添加分类" :visible.sync="dialogAddCate" width="50%">
+    <el-dialog @close="resetCateForm" class="dialog" title="添加分类" :visible.sync="dialogAddCate" width="50%">
       <!-- :model是此表单要绑定的数据对象。
       prop是校验规则
       form表单里的每一个input的数据都和model对应。 --->
@@ -54,8 +54,6 @@
           <el-form-item label="父及分类">
           <el-cascader
             clearable
-            expand-trigger="hover"
-           
             v-model="selectedKeys"
             :options="parentCate"
             :props="cascaderProps"
@@ -66,7 +64,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogAddCate = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="sureAddCate">确 定</el-button>
       </span>
     </el-dialog>
     <!--分页-->
@@ -135,8 +133,9 @@ export default {
       dialogAddCate: false,
       addCateInfo: {
         cat_name: '',
+        // 添加的是几级分类，如果添加的是一级分类，则pid为0，其次是1，2.
         cat_pid: 0,
-        // // 父及分类：默认为0.
+        // // 父及级数：默认为0.
         cat_level: 0
       },
       // 请求回来的父及的分类数据
@@ -155,7 +154,10 @@ export default {
         value: 'cat_id',
         // 级联框显示的值
         label: 'cat_name',
-        children: 'children'
+        children: 'children',
+        expandTrigger: 'click',
+        // 可以单独选择某一及
+        checkStrictly: true 
       }
     }
   },
@@ -188,7 +190,7 @@ export default {
       this.getCateList()
     },
     // 点击添加分类时，弹出模态框
-    addCate() {
+    addCateDialog() {
       this.getParentCate()
       this.dialogAddCate = true
       
@@ -204,6 +206,29 @@ export default {
     // 父及分类改变
     parentCateChange() {
       console.log(this.selectedKeys)
+      // 先判断是否选择级联选择框，没选，则添加的是一级分类。
+      if(this.selectedKeys.length>0){
+        // 说明添加的不是一级分类。
+        // 则为data的addCateinfo的cat_pid赋值.
+        this.addCateInfo.cat_pid=this.selectedKeys[this.selectedKeys.length-1]
+        // selecetedeys的长度就是分类的级别。如长度是1 ，则level就是。
+        this.addCateInfo.cat_level=this.selectedKeys.length
+      }else{
+        //说明添加的是一级分类。则
+        this.addCateInfo.cat_pid=0
+        this.addCateInfo.cat_level=0
+      }
+    },
+    // 确认添加商品分类时
+    sureAddCate() {
+      console.log(this.addCateInfo)
+    },
+    // 当添加分类模态框关闭时，清空数据
+    resetCateForm() {
+      this.$refs.addCateFormRef.resetFields()
+      this.selectedKeys=[]
+      this.addCateInfo.cat_pid=0
+      this.addCateInfo.cat_level=0
     }
   }
 }
@@ -216,13 +241,5 @@ export default {
   margin-bottom: 10px;
 }
 
-// 级联选择器的样式。
-.dialog{
-  .block{
-    >.el-scrollbar__wrap{
-      max-height:200px;
-      overflow: scroll;
-    }
-  }
-}
+
 </style>
