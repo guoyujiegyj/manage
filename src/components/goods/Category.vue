@@ -220,8 +220,14 @@ export default {
       }
     },
     // 确认添加商品分类时
-    sureAddCate() {
+    async sureAddCate() {
       console.log(this.addCateInfo)
+      // 提交数据。
+      const {data: res } = await this.$http.post('categories',this.addCateInfo)
+      if(res.meta.status!==201) return 
+      this.$message.success('添加分类成功')
+      this.dialogAddCate=false
+
     },
     // 当添加分类模态框关闭时，清空数据
     resetCateForm() {
