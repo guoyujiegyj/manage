@@ -3,6 +3,8 @@ html,body,#app{
     margin:0;
     padding:0;
     min-width: 660px;
+    color:#606266;
+  font-size: 14px;
 }
 .el-breadcrumb{
     margin-bottom:10px;
@@ -12,3 +14,4 @@ html,body,#app{
     max-height:200px;
     overflow: scroll;    
   }
+  

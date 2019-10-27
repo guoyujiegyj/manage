@@ -226,6 +226,7 @@ export default {
       const {data: res } = await this.$http.post('categories',this.addCateInfo)
       if(res.meta.status!==201) return 
       this.$message.success('添加分类成功')
+      this.getCateList()
       this.dialogAddCate=false
 
     },
