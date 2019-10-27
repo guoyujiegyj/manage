@@ -4,7 +4,7 @@
         <!--面包屑导航-->
       <my-breadcrumb level1="角色管理" level2="角色列表" btn="添加角色"></my-breadcrumb>
       <!--添加按鈕-->
-      <!-- <el-button type="primary">添加角色</el-button> -->
+      <el-button type="primary">添加角色</el-button>
     </div>
     <!--角色列表-->
     <el-table :data="rolesList" border="" height="400" stripe style="width: 100%">

@@ -3,7 +3,7 @@
     <!--头部-->
     <el-header>
       <div class="header_left">
-        <img src="../assets/heima.png" alt="">
+        
         <h2>后台管理系统</h2>
       </div>
       <el-button type="info" @click="logout">退出</el-button>
@@ -115,13 +115,16 @@ export default {
       color: #fff;
       margin-left: 20px;
     }
+    >img{
+      width:100px;
+    }
   }
   //header 的颜色
-  background: #373d41;
+  background: #1a1b20;
 }
 .el-aside {
   user-select: none;
-  background: #333744;
+  background: #1a1b20;
   > .el-menu {
     // 侧边栏右边框一像素问题。
     border-right: 0px;

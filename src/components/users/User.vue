@@ -3,7 +3,7 @@
     <!--卡片-->
     <el-card class="box-card">
       <!--面包屑导航组件-->
-      <my-breadcrumb level1="用户管理" level2="用户列表" btn="添加用户"></my-breadcrumb>
+      <my-breadcrumb level1="用户管理" level2="用户列表"></my-breadcrumb>
       <!--搜索框和添加按钮-->
       <!--:gutter设置列之间的距离-->
       <el-row :gutter="20">
@@ -15,7 +15,7 @@
           </div>
         </el-col>
         <el-col :span="6">
-          <!-- <el-button type="primary" @click="dialogFormVisible=true">添加用户</el-button> -->
+          <el-button type="primary" @click="dialogFormVisible=true">添加用户</el-button>
         </el-col>
       </el-row>
       <!--用户表格-->
@@ -134,7 +134,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
-        :page-sizes="[2, 4, 6, 10]"
+        :page-sizes="[3, 4, 6, 10]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"

@@ -8,12 +8,12 @@
       <el-breadcrumb-item>{{level2}}</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 当btn不是null，不渲染el-button-->
-    <el-button type="primary" v-if="btn!==undefined">{{btn}}</el-button>
+    <!-- <el-button type="primary" v-if="btn!==undefined" @click="handleClick">{{btn}}</el-button> -->
   </div>
 </template>
 <script>
 export default {
-  props: ['level1', 'level2', 'btn'],
+  props: ['level1', 'level2'],
   name: 'my-breadcrumb',
   data() {
     return {}

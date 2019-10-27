@@ -99,3 +99,12 @@ menuObj: {
 ## #侧边栏导航高亮显示及状态的保存。
 通过el-menu的default-active属性，将其置设为index的值即可。
 通过二级的单击事件获取到当前项的index，将其通过sessionStorage本地存储，然后在create方法里设置default-active的属性为sessionStorage里保存的值即可。
+
+### 级联选择器：
+高度有问题，需要自己设置。给级联选择器外包个父元素，为其设置class。主要是为了让权值大,可能还不够，在给套一层层。
+.block{
+  >.el-scrollbar__wrap{
+  max-height:200px;
+  overflow: scroll;
+  }
+}
