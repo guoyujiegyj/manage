@@ -30,7 +30,7 @@
                 size="mini"
                 icon="el-icon-edit"
               ></el-button>
-              <el-button type="danger" size="mini" icon="el-icon-delete"></el-button>
+              <el-button type="danger" @click="deleteParams(scope.row.attr_id)" size="mini" icon="el-icon-delete"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -49,7 +49,7 @@
                 size="mini"
                 icon="el-icon-edit"
               ></el-button>
-              <el-button type="danger" size="mini" icon="el-icon-delete"></el-button>
+              <el-button type="danger" @click="deleteParams(scope.row.attr_id)" size="mini" icon="el-icon-delete"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -237,6 +237,22 @@ export default {
       )
       this.editParamsInfo.attr_name=res.data.attr_name
       this.editParamsInfo.attr_id=res.data.attr_id
+    },
+    // 点击删除按钮，删除商品参数
+    async deleteParams(attr_id) {
+      const res = await this.$confirm('是否确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).catch(err=>err)
+        // 当确认删除时，返回的时confirm。
+        if(res!=="confirm")return 
+        // 发送请求
+        const {data: delRes} = await this.$http.delete(`categories/${this.cateId}/attributes/${attr_id}`)
+        if(delRes.meta.status!==200) return 
+        this.$message.success('删除成功')
+        this.getParamsData()
+
     }
   },
 
