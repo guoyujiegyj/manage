@@ -71,7 +71,35 @@
       <el-tab-pane label="静态属性" name="only">
         <el-button type="primary" @click="tabBtnClick" :disabled="isBtnDisabled">添加参数</el-button>
         <el-table :data="onlyTableData" border="" style="width: 100%">
-          <el-table-column type="expand"></el-table-column>
+          <el-table-column type="expand">
+            <template slot-scope="scope">
+              <!--循环遍历tag标签-->
+              <el-tag
+                @close="deleteTag(i,scope.row)"
+                closable
+                type="success"
+                v-for="(item,i) in scope.row.attr_vals"
+                :key="i"
+              >{{item}}</el-tag>
+              <!--动态编辑tag标签-->
+              <el-input
+                style="width:120px"
+                class="input-new-tag"
+                v-if="scope.row.inputVisible"
+                v-model="scope.row.inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm(scope.row)"
+                @blur="handleInputConfirm(scope.row)"
+              ></el-input>
+              <el-button
+                v-else
+                class="button-new-tag"
+                size="small"
+                @click="showInput(scope.row)"
+              >+ New Tag</el-button>
+            </template>
+          </el-table-column>
           <el-table-column type="index"></el-table-column>
           <el-table-column prop="attr_name" label="参数名称"></el-table-column>
           <el-table-column label="操作">
@@ -204,6 +232,8 @@ export default {
       // 因为为商品设置参数，只能为第三级商品设置，一级和二级都不是具体的商品。
       if (this.selectedCateKeys.length !== 3) {
         this.selectedCateKeys = []
+        this.manyTableData= []
+        this.onlyTableData= []
         return
       }
       // 是三级分类，发送请求。
