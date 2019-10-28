@@ -21,7 +21,31 @@
         <el-table :data="manyTableData" border="" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="scope">
-              <el-tag closable="" type="success" v-for="(item,i) in scope.row.attr_vals" :key="i">{{item}}</el-tag>
+              <!--循环遍历tag标签-->
+              <el-tag
+                @close="deleteTag(i,scope.row)"
+                closable
+                type="success"
+                v-for="(item,i) in scope.row.attr_vals"
+                :key="i"
+              >{{item}}</el-tag>
+              <!--动态编辑tag标签-->
+              <el-input
+                style="width:120px"
+                class="input-new-tag"
+                v-if="scope.row.inputVisible"
+                v-model="scope.row.inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm(scope.row)"
+                @blur="handleInputConfirm(scope.row)"
+              ></el-input>
+              <el-button
+                v-else
+                class="button-new-tag"
+                size="small"
+                @click="showInput(scope.row)"
+              >+ New Tag</el-button>
             </template>
           </el-table-column>
           <el-table-column type="index"></el-table-column>
@@ -34,7 +58,12 @@
                 size="mini"
                 icon="el-icon-edit"
               ></el-button>
-              <el-button type="danger" @click="deleteParams(scope.row.attr_id)" size="mini" icon="el-icon-delete"></el-button>
+              <el-button
+                type="danger"
+                @click="deleteParams(scope.row.attr_id)"
+                size="mini"
+                icon="el-icon-delete"
+              ></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -53,7 +82,12 @@
                 size="mini"
                 icon="el-icon-edit"
               ></el-button>
-              <el-button type="danger" @click="deleteParams(scope.row.attr_id)" size="mini" icon="el-icon-delete"></el-button>
+              <el-button
+                type="danger"
+                @click="deleteParams(scope.row.attr_id)"
+                size="mini"
+                icon="el-icon-delete"
+              ></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -83,7 +117,12 @@
       :visible.sync="dialogEditParams"
       width="30%"
     >
-      <el-form :model="editParamsInfo" :rules="paramsRules" ref="paramsEditFormRef" label-width="100px">
+      <el-form
+        :model="editParamsInfo"
+        :rules="paramsRules"
+        ref="paramsEditFormRef"
+        label-width="100px"
+      >
         <el-form-item label="动态参数" prop="attr_name">
           <el-input v-model="editParamsInfo.attr_name"></el-input>
         </el-form-item>
@@ -136,7 +175,8 @@ export default {
         attr_name: [
           { required: true, message: '请输入活动名称', trigger: 'blur' }
         ]
-      }
+      },
+      
     }
   },
   created() {
@@ -172,10 +212,12 @@ export default {
         { params: { sel: this.activeName } }
       )
       // 遍历，将attr_vals转换为数组
-      res.data.forEach(item  => {
-        // 三元表达式：排除时空的情况。
-          item.attr_vals=item.attr_vals?item.attr_vals.split(","):[]
-      });
+      res.data.forEach(item => {
+        // 三元表达式：排除是空的情况。
+        item.attr_vals = item.attr_vals ? item.attr_vals.split(',') : []
+        item.inputVisible=false
+        item.inputValue=""
+      })
       if (this.activeName === 'many') {
         this.manyTableData = res.data
       } else {
@@ -216,16 +258,20 @@ export default {
       console.log(this.editParamsInfo.attr_id)
       console.log(this.activeName)
       //预校验
-      this.$refs.paramsEditFormRef.validate(async vali=>{
+      this.$refs.paramsEditFormRef.validate(async vali => {
         // 如果预校验不成功
-       if(!vali) return 
-       // 如果预校验成功，发送修改的数据请求
-       const {data:res } = await this.$http.put(`categories/${this.cateId}/attributes/${this.editParamsInfo.attr_id}`,{
-         attr_name: this.editParamsInfo.attr_name,attr_sel:this.activeName
-       })
-        if(res.meta.status!==200) return
+        if (!vali) return
+        // 如果预校验成功，发送修改的数据请求
+        const { data: res } = await this.$http.put(
+          `categories/${this.cateId}/attributes/${this.editParamsInfo.attr_id}`,
+          {
+            attr_name: this.editParamsInfo.attr_name,
+            attr_sel: this.activeName
+          }
+        )
+        if (res.meta.status !== 200) return
         this.$message.success('修改商品参数成功')
-        this.dialogEditParams=false
+        this.dialogEditParams = false
         this.getParamsData()
       })
     },
@@ -243,24 +289,69 @@ export default {
           params: { attr_sel: this.activeName }
         }
       )
-      this.editParamsInfo.attr_name=res.data.attr_name
-      this.editParamsInfo.attr_id=res.data.attr_id
+      this.editParamsInfo.attr_name = res.data.attr_name
+      this.editParamsInfo.attr_id = res.data.attr_id
     },
     // 点击删除按钮，删除商品参数
     async deleteParams(attr_id) {
       const res = await this.$confirm('是否确认删除?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).catch(err=>err)
-        // 当确认删除时，返回的时confirm。
-        if(res!=="confirm")return 
-        // 发送请求
-        const {data: delRes} = await this.$http.delete(`categories/${this.cateId}/attributes/${attr_id}`)
-        if(delRes.meta.status!==200) return 
-        this.$message.success('删除成功')
-        this.getParamsData()
-
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      // 当确认删除时，返回的时confirm。
+      if (res !== 'confirm') return
+      // 发送请求
+      const { data: delRes } = await this.$http.delete(
+        `categories/${this.cateId}/attributes/${attr_id}`
+      )
+      if (delRes.meta.status !== 200) return
+      this.$message.success('删除成功')
+      this.getParamsData()
+    },
+    // tag动态编辑标签的input事件，
+    async handleInputConfirm(row) {
+      // 让button按钮显示，input隐藏
+      row.inputVisible=false
+      // 判断input输入的值,如果是空，或空格
+      if(row.inputValue.trim().length===0){
+        // 清空。
+        row.inputValue=''
+        return
+      }
+      // 不是空 ，发送请求
+      // 将input框的值放入 attr_vals数组
+      console.log(row.attr_sel)
+      row.attr_vals.push(row.inputValue.trim())
+      row.inputValue=''
+      // 调用修改tag的方法。
+      this.saveTagData(row)
+    },
+    // 将修改tag标签的数据抽离为一个方法。
+    async saveTagData(row) {
+      const {data: res} = await this.$http.put(`categories/${this.cateId}/attributes/${row.attr_id}`,{
+        // 传三个参数。
+        attr_name:row.attr_name,
+        attr_sel:row.attr_sel,
+        attr_vals:row.attr_vals.join(",")
+      })
+      if(res.meta.status!==200) return
+      this.$message.success("更新成功")
+    },
+    // 点击按钮时切换到input。
+    showInput(row) {
+      row.inputVisible = true
+      // 点击button时，切换到input框，自动获焦。
+      // 这代码时element提供好的。
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    // 点击tag标签的差，删除
+    deleteTag(i,row) {
+      row.attr_vals.splice(i,1)
+      // 调用修改tag的方法。
+      this.saveTagData(row)
     }
   },
 
