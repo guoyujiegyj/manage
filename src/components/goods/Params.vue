@@ -19,7 +19,11 @@
         <el-button type="primary" @click="tabBtnClick" :disabled="isBtnDisabled">添加参数</el-button>
         <!--动态参数表格-->
         <el-table :data="manyTableData" border="" style="width: 100%">
-          <el-table-column type="expand"></el-table-column>
+          <el-table-column type="expand">
+            <template slot-scope="scope">
+              <el-tag closable="" type="success" v-for="(item,i) in scope.row.attr_vals" :key="i">{{item}}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column type="index"></el-table-column>
           <el-table-column prop="attr_name" label="参数名称"></el-table-column>
           <el-table-column label="操作">
@@ -167,7 +171,11 @@ export default {
         `categories/${this.cateId}/attributes`,
         { params: { sel: this.activeName } }
       )
-      console.log(res)
+      // 遍历，将attr_vals转换为数组
+      res.data.forEach(item  => {
+        // 三元表达式：排除时空的情况。
+          item.attr_vals=item.attr_vals?item.attr_vals.split(","):[]
+      });
       if (this.activeName === 'many') {
         this.manyTableData = res.data
       } else {
