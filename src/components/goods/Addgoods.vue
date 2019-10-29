@@ -82,6 +82,10 @@
         <el-tab-pane label="商品内容" name="4">配置管理</el-tab-pane>
       </el-tabs>
     </el-form>
+    <!--图片预览模态框-->
+    <el-dialog title="图片预览" :visible.sync="dialogImgVisible" width="30%" >
+     <img :src="imgRoad" alt="">
+    </el-dialog>
   </el-card>
 </template>
 <script>
@@ -101,7 +105,7 @@ export default {
         // 保存各级分类的id
         goods_cat: [],
         // 图片上传后返回的路径
-        pics:[]
+        pics: []
       },
       //级联选择器的配置数据
       cateProps: {
@@ -137,11 +141,14 @@ export default {
       manyTableData: [],
       onlyTableData: [],
       // 图片上传的服务器路径
-      action:'http://127.0.0.1:8888/api/private/v1/upload',
+      action: 'http://127.0.0.1:8888/api/private/v1/upload',
       // elememtui的图片上传不是用的axios，所以token无效。需要单独设置
-      headerObj:{
-        Authorization:window.sessionStorage.getItem('token')
-      }
+      headerObj: {
+        Authorization: window.sessionStorage.getItem('token')
+      },
+      // 图片预览模态框显示
+      dialogImgVisible: false,
+      imgRoad:''
     }
   },
   created() {
@@ -201,25 +208,28 @@ export default {
       }
     },
     // 图片预览
-    handlePreview() {
-      
+    handlePreview(res) {
+      this.dialogImgVisible=true
+      // 保存图片的路径
+      this.imgRoad=res.response.data.url
+      //console.log(res)
     },
     // 图片移除,点击X时会触发。而且会带来参数
     handleRemove(file) {
       // 得到要移除的图片的路径。
       const filerode = file.response.data.tep_path
       // 从数组中找到路径对应的id
-      const i = this.addForm.pics.findIndex(item=>{
+      const i = this.addForm.pics.findIndex(item => {
         item.pic === filerode
       })
       // 删除
-      this.addForm.pics.splice(i,1)
+      this.addForm.pics.splice(i, 1)
       console.log(this.addForm.pics)
     },
-    // 图片上传成功后执行的函数    
+    // 图片上传成功后执行的函数
     handleSuccess(responce) {
-      if(responce.meta.status!== 200) return
-      const picInfo =  {pic: responce.data.tmp_path}
+      if (responce.meta.status !== 200) return
+      const picInfo = { pic: responce.data.tmp_path }
       this.addForm.pics.push(picInfo)
       console.log(this.addForm)
     }
@@ -239,5 +249,9 @@ export default {
 <style lang='less' scoped>
 .el-steps {
   margin: 20px 0;
+}
+.el-dialog img{
+  width:100%;
+  
 }
 </style>
