@@ -51,16 +51,34 @@
         <el-tab-pane label="商品参数" name="1">
           <el-form-item v-for="(item) in manyTableData" :key="item.attr_id" :label="item.attr_name">
             <el-checkbox-group v-model="item.attr_vals">
-              <el-checkbox border v-for="(item1,i) in item.attr_vals" :key="i"  :label="item1"></el-checkbox>
+              <el-checkbox border="" v-for="(item1,i) in item.attr_vals" :key="i" :label="item1"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-tab-pane>
         <el-tab-pane label="商品属性" name="2">
-          <el-form-item v-for="(item, i) in onlyTableData" label-width="190px" :key="i" :label="item.attr_name">
+          <el-form-item
+            v-for="(item, i) in onlyTableData"
+            label-width="190px"
+            :key="i"
+            :label="item.attr_name"
+          >
             <el-input v-model="item.attr_vals"></el-input>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane label="商品图片" name="3">定时任务补偿</el-tab-pane>
+        <el-tab-pane label="商品图片" name="3">
+          <el-upload
+            class="upload-demo"
+            :action="action"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :on-success="handleSuccess"
+            list-type="picture"
+            :headers="headerObj"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
+        </el-tab-pane>
         <el-tab-pane label="商品内容" name="4">配置管理</el-tab-pane>
       </el-tabs>
     </el-form>
@@ -81,7 +99,9 @@ export default {
         goods_weight: '',
         goods_number: '',
         // 保存各级分类的id
-        goods_cat: []
+        goods_cat: [],
+        // 图片上传后返回的路径
+        pics:[]
       },
       //级联选择器的配置数据
       cateProps: {
@@ -115,7 +135,13 @@ export default {
         ]
       },
       manyTableData: [],
-      onlyTableData: []
+      onlyTableData: [],
+      // 图片上传的服务器路径
+      action:'http://127.0.0.1:8888/api/private/v1/upload',
+      // elememtui的图片上传不是用的axios，所以token无效。需要单独设置
+      headerObj:{
+        Authorization:window.sessionStorage.getItem('token')
+      }
     }
   },
   created() {
@@ -157,21 +183,45 @@ export default {
         if (manyRes.meta.status !== 200) return
         // 将attr_vals字符串截取为数组。
         manyRes.data.forEach(item => {
-          item.attr_vals = item.attr_vals.length===0?
-          []:item.attr_vals.split(',')
+          item.attr_vals =
+            item.attr_vals.length === 0 ? [] : item.attr_vals.split(',')
         })
         this.manyTableData = manyRes.data
         // console.log(this.manyTableData)
-      }else if(this.stepIndex === '2'){
+      } else if (this.stepIndex === '2') {
         const { data: onlyRes } = await this.$http.get(
           `categories/${this.cateId}/attributes`,
           {
             params: { sel: 'only' }
-          })
-          if (onlyRes.meta.status !== 200) return
-          console.log(onlyRes)
-          this.onlyTableData = onlyRes.data
+          }
+        )
+        if (onlyRes.meta.status !== 200) return
+        console.log(onlyRes)
+        this.onlyTableData = onlyRes.data
       }
+    },
+    // 图片预览
+    handlePreview() {
+      
+    },
+    // 图片移除,点击X时会触发。而且会带来参数
+    handleRemove(file) {
+      // 得到要移除的图片的路径。
+      const filerode = file.response.data.tep_path
+      // 从数组中找到路径对应的id
+      const i = this.addForm.pics.findIndex(item=>{
+        item.pic === filerode
+      })
+      // 删除
+      this.addForm.pics.splice(i,1)
+      console.log(this.addForm.pics)
+    },
+    // 图片上传成功后执行的函数    
+    handleSuccess(responce) {
+      if(responce.meta.status!== 200) return
+      const picInfo =  {pic: responce.data.tmp_path}
+      this.addForm.pics.push(picInfo)
+      console.log(this.addForm)
     }
   },
   computed: {
