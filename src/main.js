@@ -27,6 +27,18 @@ axios.interceptors.request.use(config=>{
   return Promise.reject(error)
 })
 
+// 时间过滤器
+Vue.filter('dateFormat',(val)=>{
+  const date=new Date(val)
+  const y = date.getFullYear()
+  const month=(date.getMonth().toString()).padStart(2,'0')
+  const d = date.getDate().toString().padStart(2,'0')
+
+  const h = date.getHours().toString().padStart(2,'0')
+  const m = date.getMinutes().toString().padStart(2,'0')
+  return `${y}-${month}-${d} ${h}:${m}`
+})
+
 Vue.prototype.$http=axios
 // 引入去全局css
 import './assets/css/global.css'
