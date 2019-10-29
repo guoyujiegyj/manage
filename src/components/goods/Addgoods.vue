@@ -20,7 +20,12 @@
       label-position="'left'"
       label-width="80px"
     >
-      <el-tabs :tab-position="'left'" :before-leave="tabsLeave" v-model="stepIndex">
+      <el-tabs
+        :tab-position="'left'"
+        @tab-click="tabClick1"
+        :before-leave="tabsLeave"
+        v-model="stepIndex"
+      >
         <el-tab-pane label="基本信息" name="0">
           <el-form-item label="活动名称" prop="goods_name">
             <el-input v-model="addForm.goods_name"></el-input>
@@ -35,10 +40,21 @@
             <el-input type="number" v-model="addForm.goods_number"></el-input>
           </el-form-item>
           <el-form-item label="商品分类">
-            <el-cascader :options="cateList" :props="cateProps" v-model="addForm.goods_cat" @change="handleChange"></el-cascader>
+            <el-cascader
+              :options="cateList"
+              :props="cateProps"
+              v-model="addForm.goods_cat"
+              @change="handleChange"
+            ></el-cascader>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane label="商品参数" name="1">配置管理</el-tab-pane>
+        <el-tab-pane label="商品参数" name="1">
+          <el-form-item v-for="(item) in manyTableDate" :key="item.attr_id" :label="item.attr_name">
+            <el-checkbox-group v-model="item.attr_vals">
+              <el-checkbox border v-for="(item1,i) in item.attr_vals" :key="i"  :label="item1"></el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-tab-pane>
         <el-tab-pane label="商品属性" name="2">角色管理</el-tab-pane>
         <el-tab-pane label="商品图片" name="3">定时任务补偿</el-tab-pane>
         <el-tab-pane label="商品内容" name="4">配置管理</el-tab-pane>
@@ -60,6 +76,7 @@ export default {
         goods_price: '',
         goods_weight: '',
         goods_number: '',
+        // 保存各级分类的id
         goods_cat: []
       },
       //级联选择器的配置数据
@@ -92,7 +109,8 @@ export default {
         goods_cat: [
           { required: true, message: '请输入商品数量', trigger: 'blur' }
         ]
-      }
+      },
+      manyTableDate: []
     }
   },
   created() {
@@ -103,26 +121,52 @@ export default {
     async getCateList() {
       const { data: res } = await this.$http.get('categories')
       this.cateList = res.data
-      console.log(res)
+      // console.log(res)
     },
     handleChange() {
       // 如果选择的不是三级分类，则清空级联选择器。
-      if(this.addForm.goods_cat.length!==3){
-        this.addForm.goods_cat=[]
+      if (this.addForm.goods_cat.length !== 3) {
+        this.addForm.goods_cat = []
       }
-      console.log(this.addForm.goods_cat)
+      // console.log(this.addForm.goods_cat)
     },
     // tabs 切换时的钩子函数。
     // 第一个参数是旧tab的name.returnfalse时，切换失败。
-
-    tabsLeave(n,o) {
+    tabsLeave(n, o) {
       console.log(typeof o)
       // 只有当三级分类选了时，标签才可以进行切换。
-      if(o==='0' && this.addForm.goods_cat.length!==3){
-        this.$message.warning("请先选择商品的分类")
+      if (o === '0' && this.addForm.goods_cat.length !== 3) {
+        this.$message.warning('请先选择商品的分类')
         return false
       }
-
+    },
+    // tab切换时的点击事件
+    async tabClick1() {
+      if (this.stepIndex === '1') {
+        const { data: res } = await this.$http.get(
+          `categories/${this.cateId}/attributes`,
+          {
+            params: { sel: 'many' }
+          }
+        )
+        if (res.meta.status !== 200) return
+        // 将attr_vals字符串截取为数组。
+        res.data.forEach(item => {
+          item.attr_vals = item.attr_vals.length===0?
+          []:item.attr_vals.split(',')
+        })
+        this.manyTableDate = res.data
+        console.log(this.manyTableDate)
+      }
+    }
+  },
+  computed: {
+    cateId() {
+      if (this.addForm.goods_cat.length === 3) {
+        return this.addForm.goods_cat[2]
+      } else {
+        return null
+      }
     }
   }
 }
