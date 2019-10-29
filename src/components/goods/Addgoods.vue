@@ -49,13 +49,17 @@
           </el-form-item>
         </el-tab-pane>
         <el-tab-pane label="商品参数" name="1">
-          <el-form-item v-for="(item) in manyTableDate" :key="item.attr_id" :label="item.attr_name">
+          <el-form-item v-for="(item) in manyTableData" :key="item.attr_id" :label="item.attr_name">
             <el-checkbox-group v-model="item.attr_vals">
               <el-checkbox border v-for="(item1,i) in item.attr_vals" :key="i"  :label="item1"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane label="商品属性" name="2">角色管理</el-tab-pane>
+        <el-tab-pane label="商品属性" name="2">
+          <el-form-item v-for="(item, i) in onlyTableData" label-width="190px" :key="i" :label="item.attr_name">
+            <el-input v-model="item.attr_vals"></el-input>
+          </el-form-item>
+        </el-tab-pane>
         <el-tab-pane label="商品图片" name="3">定时任务补偿</el-tab-pane>
         <el-tab-pane label="商品内容" name="4">配置管理</el-tab-pane>
       </el-tabs>
@@ -110,7 +114,8 @@ export default {
           { required: true, message: '请输入商品数量', trigger: 'blur' }
         ]
       },
-      manyTableDate: []
+      manyTableData: [],
+      onlyTableData: []
     }
   },
   created() {
@@ -143,20 +148,29 @@ export default {
     // tab切换时的点击事件
     async tabClick1() {
       if (this.stepIndex === '1') {
-        const { data: res } = await this.$http.get(
+        const { data: manyRes } = await this.$http.get(
           `categories/${this.cateId}/attributes`,
           {
             params: { sel: 'many' }
           }
         )
-        if (res.meta.status !== 200) return
+        if (manyRes.meta.status !== 200) return
         // 将attr_vals字符串截取为数组。
-        res.data.forEach(item => {
+        manyRes.data.forEach(item => {
           item.attr_vals = item.attr_vals.length===0?
           []:item.attr_vals.split(',')
         })
-        this.manyTableDate = res.data
-        console.log(this.manyTableDate)
+        this.manyTableData = manyRes.data
+        // console.log(this.manyTableData)
+      }else if(this.stepIndex === '2'){
+        const { data: onlyRes } = await this.$http.get(
+          `categories/${this.cateId}/attributes`,
+          {
+            params: { sel: 'only' }
+          })
+          if (onlyRes.meta.status !== 200) return
+          console.log(onlyRes)
+          this.onlyTableData = onlyRes.data
       }
     }
   },
