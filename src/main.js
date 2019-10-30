@@ -9,6 +9,9 @@ import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+// 导入你progress
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 Vue.use(VueQuillEditor, /* { default global options } */)
 
 Vue.component('tree-table', ZkTable)
@@ -28,10 +31,19 @@ axios.interceptors.request.use(config=>{
     const token = window.sessionStorage.getItem('token')
     config.headers.Authorization=token
   }
+  // 加载条
+  NProgress.start()
   return config
 },error=>{
   return Promise.reject(error)
 })
+axios.interceptors.response.use(config=>{
+  // 加载条消失
+  NProgress.done()
+  return config
+})
+
+
 
 // 时间过滤器
 Vue.filter('dateFormat',(val)=>{
