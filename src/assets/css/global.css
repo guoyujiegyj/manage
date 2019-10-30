@@ -14,4 +14,9 @@ html,body,#app{
     max-height:200px;
     overflow: scroll;    
   }
+  /*富文本编辑器*/
+.ql-container{
+  height:200px;
+  
+}
   

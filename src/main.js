@@ -4,6 +4,12 @@ import router from './router'
 import './plugins/element.js'
 // 导入并注册树形表格插件
 import ZkTable from 'vue-table-with-tree-grid'
+// 富文本
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+Vue.use(VueQuillEditor, /* { default global options } */)
 
 Vue.component('tree-table', ZkTable)
 

@@ -79,16 +79,28 @@
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
         </el-tab-pane>
-        <el-tab-pane label="商品内容" name="4">配置管理</el-tab-pane>
+        <el-tab-pane label="商品内容" name="4">
+          <!--富文本-->
+          <quill-editor
+            v-model="editorCont"
+            ref="editorRef"
+            
+            @blur="onEditorBlur($event)"
+            @focus="onEditorFocus($event)"
+            @ready="onEditorReady($event)"
+          ></quill-editor>
+          <el-button @click="add" type="primary">确然添加</el-button>
+        </el-tab-pane>
       </el-tabs>
     </el-form>
     <!--图片预览模态框-->
-    <el-dialog title="图片预览" :visible.sync="dialogImgVisible" width="30%" >
-     <img :src="imgRoad" alt="">
+    <el-dialog title="图片预览" :visible.sync="dialogImgVisible" width="30%">
+      <img :src="imgRoad" alt="">
     </el-dialog>
   </el-card>
 </template>
 <script>
+import _ from 'lodash'
 export default {
   data() {
     return {
@@ -105,7 +117,8 @@ export default {
         // 保存各级分类的id
         goods_cat: [],
         // 图片上传后返回的路径
-        pics: []
+        pics: [],
+        attrs: []
       },
       //级联选择器的配置数据
       cateProps: {
@@ -148,7 +161,9 @@ export default {
       },
       // 图片预览模态框显示
       dialogImgVisible: false,
-      imgRoad:''
+      imgRoad: '',
+      // 富文本内容
+      editorCont: ''
     }
   },
   created() {
@@ -188,6 +203,7 @@ export default {
           }
         )
         if (manyRes.meta.status !== 200) return
+        console.log(manyRes)
         // 将attr_vals字符串截取为数组。
         manyRes.data.forEach(item => {
           item.attr_vals =
@@ -203,15 +219,15 @@ export default {
           }
         )
         if (onlyRes.meta.status !== 200) return
-        console.log(onlyRes)
+       // console.log(onlyRes)
         this.onlyTableData = onlyRes.data
       }
     },
     // 图片预览
     handlePreview(res) {
-      this.dialogImgVisible=true
+      this.dialogImgVisible = true
       // 保存图片的路径
-      this.imgRoad=res.response.data.url
+      this.imgRoad = res.response.data.url
       //console.log(res)
     },
     // 图片移除,点击X时会触发。而且会带来参数
@@ -232,6 +248,54 @@ export default {
       const picInfo = { pic: responce.data.tmp_path }
       this.addForm.pics.push(picInfo)
       console.log(this.addForm)
+    },
+    onEditorBlur() {
+
+    },
+    onEditorFocus() {
+
+    },
+    onEditorReady() {
+
+    },
+    // 确认添加商品
+    add(){
+      this.$refs.addFormRef.validate(async vali=>{
+        // 数据的预校验
+        if(!vali){
+          return this.$message.error('数据验证失败')
+        }
+        // 预校验成功，请求数据库
+        const form = _.cloneDeep(this.addForm)
+        form.goods_cat = form.goods_cat.join(',')
+        console.log(this.manyTableData)
+        // 对动态参数的处理
+        this.manyTableData.forEach(item=>{
+          const newForm={
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          }
+          this.addForm.attrs.push(newForm)
+        })
+        // 对静态属性的处理
+        this.onlyTableData.forEach(item=>{
+          const newForm = {
+            attr_id: item.attr.id,
+            attr_value: item.attr_vals
+          }
+          this.addForm.attrs.push(newForm)
+        })
+        form.attrs = this.addForm.attrs
+        //发请求
+        const {data: res} = await this.$http.post('goods',form)
+        if(res.meta.status!==201){
+          return this.$message.error('添加失败')
+        }
+        this.$message.success("添加成功")
+        this.$router.push("/goods")
+        console.log(res)
+        // console.log(form)
+      })
     }
   },
   computed: {
@@ -250,8 +314,8 @@ export default {
 .el-steps {
   margin: 20px 0;
 }
-.el-dialog img{
-  width:100%;
-  
+.el-dialog img {
+  width: 100%;
 }
+
 </style>
