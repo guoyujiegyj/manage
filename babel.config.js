@@ -16,7 +16,9 @@ module.exports = {
       }
     ],
     // 打包时需要移除所有的console
-    ...devBabel
+    ...devBabel,
+    // 路由懒加载
+    "@babel/plugin-syntax-dynamic-import"
   ]
   
 }

@@ -108,3 +108,7 @@ menuObj: {
   overflow: scroll;
   }
 }
+### 路由懒加载
+1：安装插件：babel/plugin-syntax-dynamic-import（开发依赖）
+2：在babel.config.js里：添加："@babel/plugin-syntax-dynamic-import"
+3：改造路由加载的方式。
