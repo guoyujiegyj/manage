@@ -7,7 +7,7 @@
     <el-row :gutter="20">
       <el-col :span="12">
         <div>
-          <el-input placeholder="请输入内容"   clearable>
+          <el-input placeholder="请输入内容" clearable>
             <el-button slot="append" icon="el-icon-search"></el-button>
           </el-input>
         </div>
@@ -33,8 +33,8 @@
       </el-table-column>
       <el-table-column label="操作" width="180">
         <template>
-          <el-button size="mini" type="primary" icon="el-icon-edit"></el-button>
-          <el-button size="mini" type="success" icon="el-icon-location"></el-button>
+          <el-button size="mini" @click="editAddress" type="primary" icon="el-icon-edit"></el-button>
+          <el-button size="mini" @click="goodsProgress" type="success" icon="el-icon-location"></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -46,11 +46,47 @@
       :page-sizes="[4, 6, 8, 10]"
       :page-size="4"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
+      :total="total"
+    ></el-pagination>
+    <!--修改地址模态框-->
+    <el-dialog title="收货地址" :visible.sync="dialogAddressFormVisible">
+      <el-form :model="citydata">
+        <el-form-item label="省市区/县" label-width="120px">
+          <el-cascader
+            :options="citydata"
+            v-model="selectedCity"
+            :props="cityOptions"
+            @change="handleChange"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="详细地址" label-width="120px">
+          <el-input v-model="addressForm.address2"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogAddressFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="sureEditAddress">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--物流进度-->
+    <el-dialog title="物流进度" :visible.sync="goodsProgressFormVisible">
+      <!--时间线-->
+      <el-timeline>
+        <el-timeline-item
+          v-for="(activity, index) in progressInfo"
+          :key="index"
+          :type="activity.type"
+          :color="activity.color"
+          :size="activity.size"
+          :timestamp="activity.ftime"
+        >{{activity.context}}</el-timeline-item>
+      </el-timeline>
+    </el-dialog>
   </el-card>
 </template>
 <script>
+// 导入省市县数据
+import citydata from './citydata.js'
 export default {
   data() {
     return {
@@ -60,7 +96,21 @@ export default {
         pagesize: 4
       },
       total: 0,
-      orderList: []
+      orderList: [],
+      dialogAddressFormVisible: false,
+      goodsProgressFormVisible: false,
+      addressForm: {
+        address1: [],
+        address2: ''
+      },
+      citydata,
+      cityOptions: {
+        expandTrigger: 'hover',
+        value: 'value',
+        label: 'label'
+      },
+      selectedCity: [],
+      progressInfo: []
     }
   },
   created() {
@@ -77,12 +127,25 @@ export default {
       this.total = res.data.total
     },
     handleSizeChange(size) {
-      this.queryInfo.pagesize=size
+      this.queryInfo.pagesize = size
       this.getOrderList()
     },
     handleCurrentChange(num) {
-      this.queryInfo.pagenum=num
+      this.queryInfo.pagenum = num
       this.getOrderList()
+    },
+    sureEditAddress() {},
+    editAddress() {
+      this.dialogAddressFormVisible = true
+    },
+    // 级联选择器切换时
+    handleChange() {},
+    async goodsProgress() {
+      this.goodsProgressFormVisible = true
+      const { data: res } = await this.$http.get('/kuaidi/804909574412544580')
+      if (res.meta.status !== 200) return
+      this.progressInfo = res.data
+      console.log(this.progressInfo)
     }
   }
 }
